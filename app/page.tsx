@@ -10,7 +10,8 @@ interface Task {
   due_date: string | null;
 }
 
-const API_URL = 'https://daily-task-tracker-backend.onrender.com';
+// Folosește variabilă de mediu pentru backend
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function TaskTrackerPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -22,7 +23,7 @@ export default function TaskTrackerPage() {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const res = await fetch(API_URL);
+        const res = await fetch(`${API_URL}/tasks`);
         const data = await res.json();
         setTasks(data);
       } catch (err) {
@@ -36,7 +37,7 @@ export default function TaskTrackerPage() {
   const addTask = async () => {
     if (!title) return;
     try {
-      await fetch(API_URL, {
+      await fetch(`${API_URL}/tasks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, description, due_date: dueDate || null }),
@@ -45,7 +46,7 @@ export default function TaskTrackerPage() {
       setDescription('');
       setDueDate('');
       // Refresh tasks
-      const res = await fetch(API_URL);
+      const res = await fetch(`${API_URL}/tasks`);
       const data = await res.json();
       setTasks(data);
     } catch (err) {
