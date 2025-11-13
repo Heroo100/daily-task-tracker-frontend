@@ -10,7 +10,7 @@ interface Task {
   due_date: string | null;
 }
 
-const API_URL = 'http://localhost:5000/tasks';
+const API_URL = 'https://daily-task-tracker-backend.onrender.com';
 
 export default function TaskTrackerPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
