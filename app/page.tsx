@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Task {
   id: number;
@@ -10,7 +10,6 @@ interface Task {
   due_date: string | null;
 }
 
-// Folosește variabilă de mediu pentru backend
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function TaskTrackerPage() {
@@ -19,17 +18,21 @@ export default function TaskTrackerPage() {
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
 
-  // Fetch tasks from backend
+  // Fetch tasks async
+  const fetchTasks = async () => {
+    try {
+      const res = await fetch(`${API_URL}/tasks`);
+      if (!res.ok) throw new Error('Failed to fetch tasks');
+      const data = await res.json();
+      console.log('Fetched tasks:', data); // Debug
+      setTasks(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error fetching tasks:', err);
+      setTasks([]);
+    }
+  };
+
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const res = await fetch(`${API_URL}/tasks`);
-        const data = await res.json();
-        setTasks(data);
-      } catch (err) {
-        console.error('Error fetching tasks:', err);
-      }
-    };
     fetchTasks();
   }, []);
 
@@ -45,12 +48,33 @@ export default function TaskTrackerPage() {
       setTitle('');
       setDescription('');
       setDueDate('');
-      // Refresh tasks
-      const res = await fetch(`${API_URL}/tasks`);
-      const data = await res.json();
-      setTasks(data);
+      fetchTasks();
     } catch (err) {
       console.error('Error adding task:', err);
+    }
+  };
+
+  // Toggle task status
+  const toggleStatus = async (id: number, status: boolean) => {
+    try {
+      await fetch(`${API_URL}/tasks/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: !status }),
+      });
+      fetchTasks();
+    } catch (err) {
+      console.error('Error updating task:', err);
+    }
+  };
+
+  // Delete task
+  const deleteTask = async (id: number) => {
+    try {
+      await fetch(`${API_URL}/tasks/${id}`, { method: 'DELETE' });
+      fetchTasks();
+    } catch (err) {
+      console.error('Error deleting task:', err);
     }
   };
 
@@ -88,7 +112,13 @@ export default function TaskTrackerPage() {
         ) : (
           tasks.map((task) => (
             <li key={task.id} style={{ marginBottom: '10px' }}>
-              <strong>{task.title}</strong> - {task.description || ''} - Due: {task.due_date || 'N/A'}
+              <strong>{task.title}</strong> - {task.description || ''} - Due: {task.due_date || 'N/A'} - 
+              Status: <input
+                type="checkbox"
+                checked={task.status}
+                onChange={() => toggleStatus(task.id, task.status)}
+              />
+              <button onClick={() => deleteTask(task.id)} style={{ marginLeft: '10px' }}>Delete</button>
             </li>
           ))
         )}
