@@ -14,7 +14,7 @@ export default function Home() {
   const [title, setTitle] = useState('');
 
   // Pune aici URL-ul backend-ului Render
-  const API_URL = 'http://localhost:5000';
+  const API_URL = 'https://my-backend.onrender.com';
 
   // Fetch tasks
   const fetchTasks = async () => {
