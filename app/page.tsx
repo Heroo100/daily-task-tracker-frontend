@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -12,9 +13,10 @@ export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState('');
 
-  const API_URL = 'URL_BACKEND_RENDER'; // înlocuiește cu link-ul backend Render
+  // Pune aici URL-ul backend-ului Render
+  const API_URL = 'http://localhost:5000';
 
-  // Fetch all tasks
+  // Fetch tasks
   const fetchTasks = async () => {
     try {
       const res = await axios.get<Task[]>(`${API_URL}/tasks`);
@@ -26,7 +28,7 @@ export default function Home() {
 
   // Add new task
   const addTask = async () => {
-    if (!title) return;
+    if (!title.trim()) return;
     try {
       await axios.post(`${API_URL}/tasks`, { title });
       setTitle('');
@@ -36,9 +38,9 @@ export default function Home() {
     }
   };
 
-  // Toggle task completed
+  // Toggle completed
   const toggleTask = async (id: number) => {
-    const task = tasks.find(t => t.id === id);
+    const task = tasks.find((t) => t.id === id);
     if (!task) return;
     try {
       await axios.put(`${API_URL}/tasks/${id}`, { completed: !task.completed });
@@ -58,11 +60,11 @@ export default function Home() {
     }
   };
 
- useEffect(() => {
+  useEffect(() => {
   const loadTasks = async () => {
     try {
       const res = await axios.get<Task[]>(`${API_URL}/tasks`);
-      setTasks(res.data); // acum e sigur
+      setTasks(res.data);
     } catch (err) {
       console.error(err);
     }
@@ -91,11 +93,7 @@ export default function Home() {
         {tasks.map((task) => (
           <li
             key={task.id}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: 8,
-            }}
+            style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}
           >
             <input
               type="checkbox"
