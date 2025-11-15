@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 type Task = {
-  id: string; // ✅ Schimbat din number în string pentru UUID
+  id: string; 
   title: string;
   completed: boolean;
   created_at: string;
@@ -15,7 +15,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // ✅ Înlocuiește cu URL-ul tău real de pe Render
   const API_URL = 'https://daily-task-tracker-backend.onrender.com/api';
 
   const fetchTasks = async () => {
@@ -45,7 +44,7 @@ export default function Home() {
     }
   };
 
-  const toggleTask = async (id: string) => { // ✅ string în loc de number
+  const toggleTask = async (id: string) => { 
     const task = tasks.find((t) => t.id === id);
     if (!task) return;
     try {
@@ -58,7 +57,7 @@ export default function Home() {
     }
   };
 
-  const deleteTask = async (id: string) => { // ✅ string în loc de number
+  const deleteTask = async (id: string) => { 
     try {
       setError('');
       await axios.delete(`${API_URL}/tasks/${id}`);
@@ -73,7 +72,6 @@ export default function Home() {
     fetchTasks();
   }, []);
 
-  // ✅ Handler pentru Enter key
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       addTask();
